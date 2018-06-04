@@ -11,6 +11,7 @@ var Config *Configs
 
 // Configs is the configuration which loaded from config.yaml
 type Configs struct {
+	TopicsPerPage      int `yaml:"topicsPerPage"`
 	MaximumTopicLength int `yaml:"maxTopicLength"`
 }
 

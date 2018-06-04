@@ -3,7 +3,9 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -47,6 +49,7 @@ func HTTPPost(_url string, _data interface{}) *http.Request {
 	return HTTPRequest("POST", _url, bytes.NewBuffer(jsonPayload))
 }
 
+// for test empty topics (as initial default)
 func TestGetEmptyTopics(t *testing.T) {
 	testHTTPResponse(HTTPGet("/api/getTopics"), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, w.Code, http.StatusOK)
@@ -57,6 +60,7 @@ func TestGetEmptyTopics(t *testing.T) {
 	})
 }
 
+// trying to add topic 1
 func TestNewTopic1(t *testing.T) {
 	testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
 		TopicTitle: "topic 1",
@@ -69,6 +73,7 @@ func TestNewTopic1(t *testing.T) {
 	})
 }
 
+// trying to add topic 2
 func TestNewTopic2(t *testing.T) {
 	testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
 		TopicTitle: "topic 2",
@@ -81,6 +86,7 @@ func TestNewTopic2(t *testing.T) {
 	})
 }
 
+// trying to add a long topic and just before the length of exceed length
 func TestNewTopicLong(t *testing.T) {
 	testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
 		TopicTitle: "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345",
@@ -93,6 +99,7 @@ func TestNewTopicLong(t *testing.T) {
 	})
 }
 
+// trying to add a long topic and it was exceed of the maximum length
 func TestNewTopicLongAndWontSuccess(t *testing.T) {
 	testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
 		TopicTitle: "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456",
@@ -105,6 +112,7 @@ func TestNewTopicLongAndWontSuccess(t *testing.T) {
 	})
 }
 
+// trying to add a normal length topic and it should success
 func TestNewTopicAsNormalAgain(t *testing.T) {
 	testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
 		TopicTitle: "test again",
@@ -115,4 +123,20 @@ func TestNewTopicAsNormalAgain(t *testing.T) {
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, len(responsed), 4)
 	})
+}
+
+// trying to add manys topics and can not be responsed count greater than the paging maximum
+func TestInsertManysTopics(t *testing.T) {
+	totalTopicsToAdd := Configs.Config.TopicsPerPage + 5
+	for i := 1; i <= totalTopicsToAdd; i++ {
+		testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
+			TopicTitle: fmt.Sprintf("manys-topic-%d", i),
+		}), func(w *httptest.ResponseRecorder) {
+			assert.Equal(t, w.Code, http.StatusOK)
+
+			var responsed []*Topic.ResponseOfTopic
+			json.Unmarshal(w.Body.Bytes(), &responsed)
+			assert.Equal(t, float64(len(responsed)), math.Min(float64(Configs.Config.TopicsPerPage), float64(4+i)))
+		})
+	}
 }
