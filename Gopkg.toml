@@ -24,7 +24,6 @@
 #   go-tests = true
 #   unused-packages = true
 
-
 [prune]
   go-tests = true
   unused-packages = true
@@ -33,4 +32,3 @@
   root-package = "github.com/Haraguroicha/cs-codingchallenge"
   go-version = "go1.10.2"
   ensure = "false"
-
