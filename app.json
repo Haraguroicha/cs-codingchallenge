@@ -1,0 +1,10 @@
+{
+  "name": "cs codingchallenge",
+  "description": "Golang coding challenge App",
+  "keywords": [
+    "codingchallenge",
+    "go"
+  ],
+  "website": "https://github.com/Haraguroicha/cs-codingchallenge",
+  "repository": "https://github.com/Haraguroicha/cs-codingchallenge"
+}
