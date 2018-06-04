@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"math"
 	"net/http"
 	"os"
 
@@ -50,7 +51,11 @@ func getRouter() *gin.Engine {
 
 // GetTopics Handler
 func GetTopics(c *gin.Context) {
-	c.JSON(http.StatusOK, topics)
+	// just trying to get first we want, there can not sort during users get the top list, that will be an impact to the system
+	maxTopicsCount := int(math.Min(float64(Configs.Config.TopicsPerPage), float64(len(topics))))
+	_topics := topics[0:maxTopicsCount]
+
+	c.JSON(http.StatusOK, _topics)
 }
 
 // NewTopic Handler
@@ -63,5 +68,5 @@ func NewTopic(c *gin.Context) {
 		return
 	}
 	topics = append(topics, topic)
-	c.JSON(http.StatusOK, topics)
+	GetTopics(c)
 }
