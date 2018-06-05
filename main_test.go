@@ -54,9 +54,9 @@ func TestGetEmptyTopics(t *testing.T) {
 	testHTTPResponse(HTTPGet("/api/getTopics"), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, w.Code, http.StatusOK)
 
-		var responsed []*Topic.ResponseOfTopic
+		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
-		assert.Equal(t, len(responsed), 0)
+		assert.Equal(t, len(responsed.Data), 0)
 	})
 }
 
@@ -67,9 +67,11 @@ func TestNewTopic1(t *testing.T) {
 	}), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, w.Code, http.StatusOK)
 
-		var responsed []*Topic.ResponseOfTopic
+		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
-		assert.Equal(t, len(responsed), 1)
+
+		assert.Equal(t, responsed.Success, true)
+		assert.Equal(t, len(responsed.Data), 1)
 	})
 }
 
@@ -80,9 +82,11 @@ func TestNewTopic2(t *testing.T) {
 	}), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, w.Code, http.StatusOK)
 
-		var responsed []*Topic.ResponseOfTopic
+		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
-		assert.Equal(t, len(responsed), 2)
+
+		assert.Equal(t, responsed.Success, true)
+		assert.Equal(t, len(responsed.Data), 2)
 	})
 }
 
@@ -93,9 +97,11 @@ func TestNewTopicLong(t *testing.T) {
 	}), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, w.Code, http.StatusOK)
 
-		var responsed []*Topic.ResponseOfTopic
+		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
-		assert.Equal(t, len(responsed), 3)
+
+		assert.Equal(t, responsed.Success, true)
+		assert.Equal(t, len(responsed.Data), 3)
 	})
 }
 
@@ -106,9 +112,11 @@ func TestNewTopicLongAndWontSuccess(t *testing.T) {
 	}), func(w *httptest.ResponseRecorder) {
 		assert.NotEqual(t, w.Code, http.StatusOK)
 
-		var responsed []*Topic.ResponseOfTopic
+		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
-		assert.Equal(t, len(responsed), 0)
+
+		assert.Equal(t, responsed.Success, false)
+		assert.Equal(t, len(responsed.Data), 0)
 	})
 }
 
@@ -119,9 +127,11 @@ func TestNewTopicAsNormalAgain(t *testing.T) {
 	}), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, w.Code, http.StatusOK)
 
-		var responsed []*Topic.ResponseOfTopic
+		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
-		assert.Equal(t, len(responsed), 4)
+
+		assert.Equal(t, responsed.Success, true)
+		assert.Equal(t, len(responsed.Data), 4)
 	})
 }
 
@@ -134,9 +144,11 @@ func TestInsertManysTopics(t *testing.T) {
 		}), func(w *httptest.ResponseRecorder) {
 			assert.Equal(t, w.Code, http.StatusOK)
 
-			var responsed []*Topic.ResponseOfTopic
+			var responsed *QueryResponse
 			json.Unmarshal(w.Body.Bytes(), &responsed)
-			assert.Equal(t, float64(len(responsed)), math.Min(float64(Configs.Config.TopicsPerPage), float64(4+i)))
+
+			assert.Equal(t, responsed.Success, true)
+			assert.Equal(t, float64(len(responsed.Data)), math.Min(float64(Configs.Config.TopicsPerPage), float64(4+i)))
 		})
 	}
 }

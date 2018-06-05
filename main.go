@@ -49,13 +49,23 @@ func getRouter() *gin.Engine {
 	return router
 }
 
+// QueryResponse is the Response of XHR Request structure, it always have Success field to indicate the request is success or not
+type QueryResponse struct {
+	Data    []interface{} `json:"data"`
+	Success bool          `json:"success"`
+}
+
 // GetTopics Handler
 func GetTopics(c *gin.Context) {
 	// just trying to get first we want, there can not sort during users get the top list, that will be an impact to the system
 	maxTopicsCount := int(math.Min(float64(Configs.Config.TopicsPerPage), float64(len(topics))))
-	_topics := topics[0:maxTopicsCount]
+	_topics := make([]interface{}, len(topics))
+	for i, v := range topics {
+		_topics[i] = v
+	}
+	_topics = _topics[0:maxTopicsCount]
 
-	c.JSON(http.StatusOK, _topics)
+	c.JSON(http.StatusOK, &QueryResponse{Data: _topics, Success: true})
 }
 
 // NewTopic Handler
