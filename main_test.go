@@ -25,7 +25,6 @@ func init() {
 
 // Helper function to process a request and test its response
 func testHTTPResponse(req *http.Request, f func(w *httptest.ResponseRecorder)) {
-
 	// Create a response recorder
 	w := httptest.NewRecorder()
 
