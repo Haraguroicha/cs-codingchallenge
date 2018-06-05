@@ -50,7 +50,7 @@ func HTTPPost(_url string, _data interface{}) *http.Request {
 
 // for test empty topics (as initial default)
 func TestGetEmptyTopics(t *testing.T) {
-	testHTTPResponse(HTTPGet("/api/getTopics"), func(w *httptest.ResponseRecorder) {
+	testHTTPResponse(HTTPGet("/api/getTopics/"), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse

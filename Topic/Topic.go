@@ -4,6 +4,7 @@ import (
 	"sort"
 
 	"github.com/Haraguroicha/cs-codingchallenge/Configs"
+	"github.com/Haraguroicha/cs-codingchallenge/Error"
 	"github.com/Haraguroicha/cs-codingchallenge/Utilities"
 )
 
@@ -22,7 +23,7 @@ type ResponseOfTopic struct {
 // NewTopic is to create a new topic
 func NewTopic(_topic string) (*ResponseOfTopic, error) {
 	if len(_topic) > Configs.Config.MaximumTopicLength {
-		err := &ExceededTopicLengthError{Length: Configs.Config.MaximumTopicLength}
+		err := Error.RaiseExceededTopicLengthError(Configs.Config.MaximumTopicLength)
 		return nil, err
 	}
 
@@ -45,6 +46,17 @@ func GetTopicIDs(_topics []*ResponseOfTopic) []int {
 		_topicIDs[i] = v.(int)
 	}
 	return _topicIDs
+}
+
+// GetTopic from Topics
+func GetTopic(_topics []*ResponseOfTopic, _topicID int) (*ResponseOfTopic, error) {
+	for _, t := range _topics {
+		if t.TopicID == _topicID {
+			return t, nil
+		}
+	}
+	err := Error.RaiseNoTopicError(_topicID)
+	return nil, err
 }
 
 type lessFunc func(p1, p2 *ResponseOfTopic) bool
