@@ -19,7 +19,7 @@ type ResponseOfTopic struct {
 // NewTopic is to create a new topic
 func NewTopic(_topic string) (*ResponseOfTopic, error) {
 	if len(_topic) > Configs.Config.MaximumTopicLength {
-		err := &ExceededTopicLengthError{Configs.Config.MaximumTopicLength}
+		err := &ExceededTopicLengthError{Length: Configs.Config.MaximumTopicLength}
 		return nil, err
 	}
 
