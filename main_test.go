@@ -217,7 +217,7 @@ func TestUpVotes(t *testing.T) {
 	})
 }
 
-// trying to add manys topics and can not be responsed count greater than the paging maximum
+// trying to add manys topics that will be append to last
 func TestInsertManysTopicsAgain(t *testing.T) {
 	addManysTopic(t, 25, func(t *testing.T, topicTitle string, responsed *QueryResponse) {
 		assert.Equal(t, topicTitle, topics[len(topics)-1].TopicTitle)
@@ -273,7 +273,7 @@ func TestDownVotes(t *testing.T) {
 	})
 }
 
-// trying to add manys topics and can not be responsed count greater than the paging maximum
+// trying to add manys topics that will be append to before the last one, because last one is subtotal less than 0
 func TestInsertManysTopicsAgainAndAgain(t *testing.T) {
 	addManysTopic(t, 50, func(t *testing.T, topicTitle string, responsed *QueryResponse) {
 		assert.Equal(t, topicTitle, topics[len(topics)-2].TopicTitle) // it should be at last two to find last we added topic
