@@ -195,3 +195,49 @@ func TestUpVotes(t *testing.T) {
 		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[2].Votes)
 	})
 }
+
+// trying to DownVote some topics
+func TestDownVotes(t *testing.T) {
+	testHTTPResponse(HTTPPost("/api/downVote/4", nil), func(w *httptest.ResponseRecorder) {
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+
+		assert.Equal(t, true, responsed.Success)
+		_topicIDs := Topic.GetTopicIDs(responsed.Data)
+		assert.Equal(t, []int{4, 3, 0}, _topicIDs[0:3])
+		assert.Equal(t, &Topic.Votes{UpVotes: 2, DownVotes: 1, SumVotes: 1}, responsed.Data[0].Votes)
+		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[1].Votes)
+		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[2].Votes)
+	})
+
+	testHTTPResponse(HTTPPost("/api/downVote/4", nil), func(w *httptest.ResponseRecorder) {
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+
+		assert.Equal(t, true, responsed.Success)
+		_topicIDs := Topic.GetTopicIDs(responsed.Data)
+		assert.Equal(t, []int{3, 4, 0}, _topicIDs[0:3])
+		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[0].Votes)
+		assert.Equal(t, &Topic.Votes{UpVotes: 2, DownVotes: 2, SumVotes: 0}, responsed.Data[1].Votes)
+		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[2].Votes)
+	})
+
+	testHTTPResponse(HTTPPost("/api/downVote/4", nil), func(w *httptest.ResponseRecorder) {
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+
+		assert.Equal(t, true, responsed.Success)
+		_topicIDs := Topic.GetTopicIDs(responsed.Data)
+		assert.Equal(t, []int{3, 0, 1}, _topicIDs[0:3])
+		assert.Equal(t, 4, topics[len(topics)-1].TopicID)
+		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[0].Votes)
+		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[1].Votes)
+		assert.Equal(t, &Topic.Votes{UpVotes: 2, DownVotes: 3, SumVotes: -1}, topics[len(topics)-1].Votes)
+	})
+}

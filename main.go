@@ -49,6 +49,8 @@ func getRouter() *gin.Engine {
 
 	router.POST("/api/upVote/:topic", UpTopic)
 
+	router.POST("/api/downVote/:topic", DownTopic)
+
 	return router
 }
 
@@ -102,5 +104,19 @@ func UpTopic(c *gin.Context) {
 		panic(err)
 	}
 	topic.Votes.SetUpVote()
+	GetTopics(c)
+}
+
+// DownTopic Handler
+func DownTopic(c *gin.Context) {
+	topicID, err := strconv.Atoi(c.Param("topic"))
+	if err != nil {
+		panic(err)
+	}
+	topic, err := getTopic(topicID)
+	if err != nil {
+		panic(err)
+	}
+	topic.Votes.SetDownVote()
 	GetTopics(c)
 }
