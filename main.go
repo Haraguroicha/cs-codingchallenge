@@ -80,6 +80,7 @@ func NewTopic(c *gin.Context) {
 	}
 	topic.TopicID = len(topics)
 	topics = append(topics, topic)
+	Topic.SortTopics(topics)
 	GetTopics(c)
 }
 
