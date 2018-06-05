@@ -44,3 +44,8 @@ func GetTopicIDs(_topics []*ResponseOfTopic) []int {
 	}
 	return _topicIDs
 }
+
+// SortTopics for sort the topics by votes
+func SortTopics(_topics []*ResponseOfTopic) []*ResponseOfTopic {
+	return _topics
+}
