@@ -188,7 +188,7 @@ func TestInsertManysTopics(t *testing.T) {
 
 // trying to UpVote some topics
 func TestUpVotes(t *testing.T) {
-	testHTTPResponse(HTTPPost("/api/upVote/3", nil), func(w *httptest.ResponseRecorder) {
+	testHTTPResponse(HTTPPost("/api/upVote/3/", nil), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
@@ -202,7 +202,7 @@ func TestUpVotes(t *testing.T) {
 		t.Log("TopicIDs", Topic.GetTopicIDs(topics))
 	})
 
-	testHTTPResponse(HTTPPost("/api/upVote/4", nil), func(w *httptest.ResponseRecorder) {
+	testHTTPResponse(HTTPPost("/api/upVote/4/", nil), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
@@ -217,7 +217,7 @@ func TestUpVotes(t *testing.T) {
 		t.Log("TopicIDs", Topic.GetTopicIDs(topics))
 	})
 
-	testHTTPResponse(HTTPPost("/api/upVote/4", nil), func(w *httptest.ResponseRecorder) {
+	testHTTPResponse(HTTPPost("/api/upVote/4/", nil), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
@@ -242,7 +242,7 @@ func TestInsertManysTopicsAgain(t *testing.T) {
 
 // trying to DownVote some topics
 func TestDownVotes(t *testing.T) {
-	testHTTPResponse(HTTPPost("/api/downVote/4", nil), func(w *httptest.ResponseRecorder) {
+	testHTTPResponse(HTTPPost("/api/downVote/4/", nil), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
@@ -257,7 +257,7 @@ func TestDownVotes(t *testing.T) {
 		t.Log("TopicIDs", Topic.GetTopicIDs(topics))
 	})
 
-	testHTTPResponse(HTTPPost("/api/downVote/4", nil), func(w *httptest.ResponseRecorder) {
+	testHTTPResponse(HTTPPost("/api/downVote/4/", nil), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
@@ -272,7 +272,7 @@ func TestDownVotes(t *testing.T) {
 		t.Log("TopicIDs", Topic.GetTopicIDs(topics))
 	})
 
-	testHTTPResponse(HTTPPost("/api/downVote/4", nil), func(w *httptest.ResponseRecorder) {
+	testHTTPResponse(HTTPPost("/api/downVote/4/", nil), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse

@@ -48,9 +48,9 @@ func getRouter() *gin.Engine {
 
 	router.POST("/api/newTopic", NewTopic)
 
-	router.POST("/api/upVote/:topic", UpTopic)
+	router.POST("/api/upVote/:topic/*page", UpTopic)
 
-	router.POST("/api/downVote/:topic", DownTopic)
+	router.POST("/api/downVote/:topic/*page", DownTopic)
 
 	return router
 }
