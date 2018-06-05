@@ -51,11 +51,11 @@ func HTTPPost(_url string, _data interface{}) *http.Request {
 // for test empty topics (as initial default)
 func TestGetEmptyTopics(t *testing.T) {
 	testHTTPResponse(HTTPGet("/api/getTopics"), func(w *httptest.ResponseRecorder) {
-		assert.Equal(t, w.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
-		assert.Equal(t, len(responsed.Data), 0)
+		assert.Equal(t, 0, len(responsed.Data))
 	})
 }
 
@@ -64,13 +64,13 @@ func TestNewTopic1(t *testing.T) {
 	testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
 		TopicTitle: "topic 1",
 	}), func(w *httptest.ResponseRecorder) {
-		assert.Equal(t, w.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 
-		assert.Equal(t, responsed.Success, true)
-		assert.Equal(t, len(responsed.Data), 1)
+		assert.Equal(t, true, responsed.Success)
+		assert.Equal(t, 1, len(responsed.Data))
 	})
 }
 
@@ -79,13 +79,13 @@ func TestNewTopic2(t *testing.T) {
 	testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
 		TopicTitle: "topic 2",
 	}), func(w *httptest.ResponseRecorder) {
-		assert.Equal(t, w.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 
-		assert.Equal(t, responsed.Success, true)
-		assert.Equal(t, len(responsed.Data), 2)
+		assert.Equal(t, true, responsed.Success)
+		assert.Equal(t, 2, len(responsed.Data))
 	})
 }
 
@@ -94,13 +94,13 @@ func TestNewTopicLong(t *testing.T) {
 	testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
 		TopicTitle: "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345",
 	}), func(w *httptest.ResponseRecorder) {
-		assert.Equal(t, w.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 
-		assert.Equal(t, responsed.Success, true)
-		assert.Equal(t, len(responsed.Data), 3)
+		assert.Equal(t, true, responsed.Success)
+		assert.Equal(t, 3, len(responsed.Data))
 	})
 }
 
@@ -109,13 +109,13 @@ func TestNewTopicLongAndWontSuccess(t *testing.T) {
 	testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
 		TopicTitle: "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456",
 	}), func(w *httptest.ResponseRecorder) {
-		assert.NotEqual(t, w.Code, http.StatusOK)
+		assert.NotEqual(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 
-		assert.Equal(t, responsed.Success, false)
-		assert.Equal(t, len(responsed.Data), 0)
+		assert.Equal(t, false, responsed.Success)
+		assert.Equal(t, 0, len(responsed.Data))
 	})
 }
 
@@ -124,13 +124,13 @@ func TestNewTopicAsNormalAgain(t *testing.T) {
 	testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
 		TopicTitle: "test again",
 	}), func(w *httptest.ResponseRecorder) {
-		assert.Equal(t, w.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 
-		assert.Equal(t, responsed.Success, true)
-		assert.Equal(t, len(responsed.Data), 4)
+		assert.Equal(t, true, responsed.Success)
+		assert.Equal(t, 4, len(responsed.Data))
 	})
 }
 
@@ -141,13 +141,13 @@ func TestInsertManysTopics(t *testing.T) {
 		testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
 			TopicTitle: fmt.Sprintf("manys-topic-%d", i),
 		}), func(w *httptest.ResponseRecorder) {
-			assert.Equal(t, w.Code, http.StatusOK)
+			assert.Equal(t, http.StatusOK, w.Code)
 
 			var responsed *QueryResponse
 			json.Unmarshal(w.Body.Bytes(), &responsed)
 
-			assert.Equal(t, responsed.Success, true)
-			assert.Equal(t, float64(len(responsed.Data)), math.Min(float64(Configs.Config.TopicsPerPage), float64(4+i)))
+			assert.Equal(t, true, responsed.Success)
+			assert.Equal(t, math.Min(float64(Configs.Config.TopicsPerPage), float64(4+i)), float64(len(responsed.Data)))
 		})
 	}
 }
@@ -155,35 +155,35 @@ func TestInsertManysTopics(t *testing.T) {
 // trying to UpVote some topics
 func TestUpVotes(t *testing.T) {
 	testHTTPResponse(HTTPPost("/api/upVote/3", nil), func(w *httptest.ResponseRecorder) {
-		assert.Equal(t, w.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 
-		assert.Equal(t, responsed.Success, true)
+		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, _topicIDs[0:2], []int{3, 0})
+		assert.Equal(t, []int{3, 0}, _topicIDs[0:2])
 	})
 
 	testHTTPResponse(HTTPPost("/api/upVote/4", nil), func(w *httptest.ResponseRecorder) {
-		assert.Equal(t, w.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 
-		assert.Equal(t, responsed.Success, true)
+		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, _topicIDs[0:3], []int{3, 4, 0})
+		assert.Equal(t, []int{3, 4, 0}, _topicIDs[0:3])
 	})
 
 	testHTTPResponse(HTTPPost("/api/upVote/4", nil), func(w *httptest.ResponseRecorder) {
-		assert.Equal(t, w.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 
-		assert.Equal(t, responsed.Success, true)
+		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, _topicIDs[0:3], []int{4, 3, 0})
+		assert.Equal(t, []int{4, 3, 0}, _topicIDs[0:3])
 	})
 }
