@@ -63,9 +63,27 @@ type QueryResponse struct {
 
 // GetTopics Handler
 func GetTopics(c *gin.Context) {
+	var _page = c.Param("page")
+	if len(_page) <= 1 {
+		_page = "1"
+	} else {
+		_page = _page[1:len(_page)]
+	}
+	page, err := strconv.Atoi(_page)
+	if err != nil {
+		err := Error.RaisePageParameterInvalidError(_page)
+		c.JSON(http.StatusExpectationFailed, err)
+		return
+	}
 	// just trying to get first we want, there can not sort during users get the top list, that will be an impact to the system
-	maxTopicsCount := int(math.Min(float64(Configs.Config.TopicsPerPage), float64(len(topics))))
-	_topics := topics[0:maxTopicsCount]
+	starts := Configs.Config.TopicsPerPage * (page - 1)
+	maxTopicsCount := int(math.Min(float64(starts+Configs.Config.TopicsPerPage), float64(len(topics))))
+	if starts > len(topics) {
+		err := Error.RaisePageInvalidError(_page)
+		c.JSON(http.StatusExpectationFailed, err)
+		return
+	}
+	_topics := topics[starts:maxTopicsCount]
 
 	c.JSON(http.StatusOK, &QueryResponse{Data: _topics, Success: true})
 }

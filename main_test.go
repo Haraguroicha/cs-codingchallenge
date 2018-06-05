@@ -57,6 +57,22 @@ func TestGetEmptyTopics(t *testing.T) {
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, 0, len(responsed.Data))
 	})
+
+	testHTTPResponse(HTTPGet("/api/getTopics/1"), func(w *httptest.ResponseRecorder) {
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+		assert.Equal(t, 0, len(responsed.Data))
+	})
+
+	testHTTPResponse(HTTPGet("/api/getTopics/2"), func(w *httptest.ResponseRecorder) {
+		assert.NotEqual(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+		assert.Equal(t, 0, len(responsed.Data))
+	})
 }
 
 // trying to add topic 1

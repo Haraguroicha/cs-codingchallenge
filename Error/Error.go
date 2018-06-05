@@ -46,7 +46,25 @@ func RaiseNoTopicParameterFoundError() *ErrorMessage {
 func RaiseTopicParameterInvalidError(invalidTopicID string) *ErrorMessage {
 	return &ErrorMessage{
 		Title:   "TopicParameterInvalidError",
-		Message: fmt.Sprintf("There is invalid TopicID of %s", invalidTopicID),
+		Message: fmt.Sprintf("There is an invalid TopicID parameter of %s", invalidTopicID),
+		Success: false,
+	}
+}
+
+// RaisePageParameterInvalidError for raise PageParameterInvalidError
+func RaisePageParameterInvalidError(invalidPage string) *ErrorMessage {
+	return &ErrorMessage{
+		Title:   "PageParameterInvalidError",
+		Message: fmt.Sprintf("There is an invalid Page parameter of %s", invalidPage),
+		Success: false,
+	}
+}
+
+// RaisePageInvalidError for raise PageInvalidError
+func RaisePageInvalidError(invalidPage string) *ErrorMessage {
+	return &ErrorMessage{
+		Title:   "PageInvalidError",
+		Message: fmt.Sprintf("There is an invalid Page of %s", invalidPage),
 		Success: false,
 	}
 }
