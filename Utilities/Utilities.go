@@ -1,6 +1,8 @@
 package Utilities
 
-import "reflect"
+import (
+	"reflect"
+)
 
 // from: https://gist.github.com/rafkhan/6501567
 
