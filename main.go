@@ -67,6 +67,7 @@ func NewTopic(c *gin.Context) {
 		c.JSON(http.StatusExpectationFailed, err)
 		return
 	}
+	topic.TopicID = len(topics)
 	topics = append(topics, topic)
 	GetTopics(c)
 }

@@ -11,6 +11,7 @@ type RequestOfTopic struct {
 
 // ResponseOfTopic struct
 type ResponseOfTopic struct {
+	TopicID    int    `json:"topicId"`
 	TopicTitle string `json:"topicTitle"`
 	Votes      *Votes `json:"votes"`
 }
