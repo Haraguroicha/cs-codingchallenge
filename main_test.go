@@ -163,6 +163,8 @@ func TestUpVotes(t *testing.T) {
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
 		assert.Equal(t, []int{3, 0}, _topicIDs[0:2])
+		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[0].Votes)
+		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[1].Votes)
 	})
 
 	testHTTPResponse(HTTPPost("/api/upVote/4", nil), func(w *httptest.ResponseRecorder) {
@@ -174,6 +176,9 @@ func TestUpVotes(t *testing.T) {
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
 		assert.Equal(t, []int{3, 4, 0}, _topicIDs[0:3])
+		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[0].Votes)
+		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[1].Votes)
+		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[2].Votes)
 	})
 
 	testHTTPResponse(HTTPPost("/api/upVote/4", nil), func(w *httptest.ResponseRecorder) {
@@ -185,5 +190,8 @@ func TestUpVotes(t *testing.T) {
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
 		assert.Equal(t, []int{4, 3, 0}, _topicIDs[0:3])
+		assert.Equal(t, &Topic.Votes{UpVotes: 2, DownVotes: 0, SumVotes: 2}, responsed.Data[0].Votes)
+		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[1].Votes)
+		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[2].Votes)
 	})
 }
