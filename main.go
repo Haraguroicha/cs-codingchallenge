@@ -104,7 +104,7 @@ func UpTopic(c *gin.Context) {
 		panic(err)
 	}
 	topic.Votes.SetUpVote()
-	topics = Topic.SortTopics(topics)
+	Topic.SortTopics(topics)
 	GetTopics(c)
 }
 
@@ -119,6 +119,6 @@ func DownTopic(c *gin.Context) {
 		panic(err)
 	}
 	topic.Votes.SetDownVote()
-	topics = Topic.SortTopics(topics)
+	Topic.SortTopics(topics)
 	GetTopics(c)
 }
