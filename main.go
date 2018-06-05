@@ -5,6 +5,7 @@ import (
 	"math"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/Haraguroicha/cs-codingchallenge/Configs"
 	"github.com/Haraguroicha/cs-codingchallenge/Topic"
@@ -46,6 +47,8 @@ func getRouter() *gin.Engine {
 
 	router.POST("/api/newTopic", NewTopic)
 
+	router.POST("/api/upVote/:topic", UpTopic)
+
 	return router
 }
 
@@ -75,5 +78,29 @@ func NewTopic(c *gin.Context) {
 	}
 	topic.TopicID = len(topics)
 	topics = append(topics, topic)
+	GetTopics(c)
+}
+
+func getTopic(_topicID int) (*Topic.ResponseOfTopic, error) {
+	for _, t := range topics {
+		if t.TopicID == _topicID {
+			return t, nil
+		}
+	}
+	err := &Topic.NoTopicError{TopicID: _topicID}
+	return nil, err
+}
+
+// UpTopic Handler
+func UpTopic(c *gin.Context) {
+	topicID, err := strconv.Atoi(c.Param("topic"))
+	if err != nil {
+		panic(err)
+	}
+	topic, err := getTopic(topicID)
+	if err != nil {
+		panic(err)
+	}
+	topic.Votes.SetUpVote()
 	GetTopics(c)
 }

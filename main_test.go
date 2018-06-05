@@ -151,3 +151,39 @@ func TestInsertManysTopics(t *testing.T) {
 		})
 	}
 }
+
+// trying to UpVote some topics
+func TestUpVotes(t *testing.T) {
+	testHTTPResponse(HTTPPost("/api/upVote/3", nil), func(w *httptest.ResponseRecorder) {
+		assert.Equal(t, w.Code, http.StatusOK)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+
+		assert.Equal(t, responsed.Success, true)
+		_topicIDs := Topic.GetTopicIDs(responsed.Data)
+		assert.Equal(t, _topicIDs[0:2], []int{3, 0})
+	})
+
+	testHTTPResponse(HTTPPost("/api/upVote/4", nil), func(w *httptest.ResponseRecorder) {
+		assert.Equal(t, w.Code, http.StatusOK)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+
+		assert.Equal(t, responsed.Success, true)
+		_topicIDs := Topic.GetTopicIDs(responsed.Data)
+		assert.Equal(t, _topicIDs[0:3], []int{3, 4, 0})
+	})
+
+	testHTTPResponse(HTTPPost("/api/upVote/4", nil), func(w *httptest.ResponseRecorder) {
+		assert.Equal(t, w.Code, http.StatusOK)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+
+		assert.Equal(t, responsed.Success, true)
+		_topicIDs := Topic.GetTopicIDs(responsed.Data)
+		assert.Equal(t, _topicIDs[0:3], []int{4, 3, 0})
+	})
+}

@@ -2,6 +2,7 @@ package Topic
 
 import (
 	"github.com/Haraguroicha/cs-codingchallenge/Configs"
+	"github.com/Haraguroicha/cs-codingchallenge/Utilities"
 )
 
 // RequestOfTopic struct
@@ -30,4 +31,16 @@ func NewTopic(_topic string) (*ResponseOfTopic, error) {
 	}
 
 	return topic, nil
+}
+
+// GetTopicIDs for only map the TopicID as array
+func GetTopicIDs(_topics []*ResponseOfTopic) []int {
+	_ids := Utilities.Map(_topics, func(val interface{}) interface{} {
+		return val.(*ResponseOfTopic).TopicID
+	}).([]interface{})
+	_topicIDs := make([]int, len(_ids))
+	for i, v := range _ids {
+		_topicIDs[i] = v.(int)
+	}
+	return _topicIDs
 }
