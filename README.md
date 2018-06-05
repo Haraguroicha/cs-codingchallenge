@@ -36,4 +36,108 @@ demo site is available at https://carousellcodingchallenge.herokuapp.com/
 
 ### APIs
 
-TODO
+* `GET /api/getTopics/*page`
+
+    for getting the topics by paging, default is the first page
+
+    Response will likes following
+
+    ```json
+    {
+        "data": [
+            {
+                "topicId": 0,
+                "topicTitle": "Sample",
+                "votes": {
+                    "upVotes": 0,
+                    "downVotes": 0,
+                    "sumVotes": 0
+                }
+            }
+        ],
+        "success": true
+    }
+    ```
+
+* `POST /api/newTopic`
+
+    for submit the new topic, the request body need following structure
+
+    ```json
+    {
+        "topicTitle": "Title"
+    }
+    ```
+
+    And Success will Response likes following
+
+    ```json
+    {
+        "data": [
+            {
+                "topicId": 0,
+                "topicTitle": "Title",
+                "votes": {
+                    "upVotes": 0,
+                    "downVotes": 0,
+                    "sumVotes": 0
+                }
+            }
+        ],
+        "success": true
+    }
+    ```
+
+    And exceeded 255 characters will failed likes following
+
+    ```json
+    {
+        "title": "ExceededTopicLengthError",
+        "message": "The Topic length exceeded to 255 characters",
+        "success": false
+    }
+    ```
+
+* `POST /api/upVote/:topic/*page`
+
+    submit a UpVote to specified topic id and response specified page to get topics
+
+    Success and error response reference to `getTopics`
+
+    addition error message by topic id was not found are following
+
+    ```json
+    {
+        "title": "NoTopicError",
+        "message": "The Topic Not Found for TopicID xxx",
+        "success": false
+    }
+    ```
+
+    and vote success but page invalid are following
+
+    ```json
+    {
+        "title": "PageInvalidError",
+        "message": "There is an invalid Page of xxx",
+        "success": false
+    }
+    ```
+
+* `POST /api/downVote/:topic/*page`
+
+    submit a DownVote to specified topic id and response specified page to get topics
+
+    Success and error response reference to `upVote`
+
+### Implementation and design
+
+1. Only sorting during add new topic or vote some topic
+2. No need to sort the data when we get the topics data
+3. Get the first 20 is just slice first 20 topics data is okay
+4. Topic Title length and Topics per page is configurable by `conf/config.yaml`
+
+### Knowing issues
+
+1. No Lock implementation for add or voting the topics data during its sorting by previous request
+2. Underlying the `sort` package to sort the topics data may bound the performance during large data transation
