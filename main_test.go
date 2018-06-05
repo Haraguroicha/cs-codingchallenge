@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"math/rand"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/Haraguroicha/cs-codingchallenge/Configs"
 	"github.com/Haraguroicha/cs-codingchallenge/Topic"
@@ -20,7 +22,7 @@ var r *gin.Engine
 
 func init() {
 	Configs.Config = Configs.NewConfig("conf/config.yaml")
-	r = getRouter()
+	r = getRouter(true)
 }
 
 // Helper function to process a request and test its response
@@ -294,4 +296,33 @@ func TestInsertManysTopicsAgainAndAgain(t *testing.T) {
 	addManysTopic(t, 50, func(t *testing.T, topicTitle string, responsed *QueryResponse) {
 		assert.Equal(t, topicTitle, topics[len(topics)-2].TopicTitle) // it should be at last two to find last we added topic
 	})
+}
+
+func randomIn(min, max int) int {
+	seed := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(seed)
+	return r.Intn(max-min) + min
+}
+
+func BenchmarkNewTopics(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		topicTitle := fmt.Sprintf("bench-manys-topic-%d", n)
+		testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
+			TopicTitle: topicTitle,
+		}), func(w *httptest.ResponseRecorder) {})
+	}
+}
+
+func BenchmarkUpVotes(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		topicID := randomIn(0, len(topics))
+		testHTTPResponse(HTTPPost(fmt.Sprintf("/api/upVote/%d/", topicID), nil), func(w *httptest.ResponseRecorder) {})
+	}
+}
+
+func BenchmarkDownVotes(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		topicID := randomIn(0, len(topics))
+		testHTTPResponse(HTTPPost(fmt.Sprintf("/api/downVote/%d/", topicID), nil), func(w *httptest.ResponseRecorder) {})
+	}
 }

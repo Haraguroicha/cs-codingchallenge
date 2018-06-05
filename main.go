@@ -29,14 +29,16 @@ func main() {
 
 	log.Printf("Topic Count: %d", len(topics))
 
-	router := getRouter()
+	router := getRouter(false)
 
 	router.Run(":" + port)
 }
 
-func getRouter() *gin.Engine {
+func getRouter(isTest bool) *gin.Engine {
 	router := gin.New()
-	router.Use(gin.Logger())
+	if isTest == false {
+		router.Use(gin.Logger())
+	}
 	router.LoadHTMLGlob("templates/*.tmpl.html")
 	router.Static("/static", "static")
 

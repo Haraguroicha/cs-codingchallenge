@@ -59,6 +59,8 @@ func GetTopic(_topics []*ResponseOfTopic, _topicID int) (*ResponseOfTopic, error
 	return nil, err
 }
 
+// sort by multi key is ref from https://golang.org/pkg/sort/
+
 type lessFunc func(p1, p2 *ResponseOfTopic) bool
 
 // MultiSorter implements the Sort interface, sorting the changes within.
