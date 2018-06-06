@@ -60,6 +60,30 @@ func TestGetEmptyTopics(t *testing.T) {
 		assert.Equal(t, 0, len(responsed.Data))
 	})
 
+	testHTTPResponse(HTTPGet("/api/getTopics/0"), func(w *httptest.ResponseRecorder) {
+		assert.NotEqual(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+		assert.Equal(t, 0, len(responsed.Data))
+	})
+
+	testHTTPResponse(HTTPGet("/api/getTopics/-1"), func(w *httptest.ResponseRecorder) {
+		assert.NotEqual(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+		assert.Equal(t, 0, len(responsed.Data))
+	})
+
+	testHTTPResponse(HTTPGet("/api/getTopics/a"), func(w *httptest.ResponseRecorder) {
+		assert.NotEqual(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+		assert.Equal(t, 0, len(responsed.Data))
+	})
+
 	testHTTPResponse(HTTPGet("/api/getTopics/1"), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, http.StatusOK, w.Code)
 
@@ -298,10 +322,90 @@ func TestInsertManysTopicsAgainAndAgain(t *testing.T) {
 	})
 }
 
+// for test to get top topics
+func TestGetTopTopics(t *testing.T) {
+	testHTTPResponse(HTTPGet("/api/getTopics/"), func(w *httptest.ResponseRecorder) {
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+		assert.Equal(t, Configs.Config.TopicsPerPage, len(responsed.Data))
+	})
+
+	testHTTPResponse(HTTPGet("/api/getTopics/0"), func(w *httptest.ResponseRecorder) {
+		assert.NotEqual(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+		assert.Equal(t, 0, len(responsed.Data))
+	})
+
+	testHTTPResponse(HTTPGet("/api/getTopics/-1"), func(w *httptest.ResponseRecorder) {
+		assert.NotEqual(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+		assert.Equal(t, 0, len(responsed.Data))
+	})
+
+	testHTTPResponse(HTTPGet("/api/getTopics/a"), func(w *httptest.ResponseRecorder) {
+		assert.NotEqual(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+		assert.Equal(t, 0, len(responsed.Data))
+	})
+
+	testHTTPResponse(HTTPGet("/api/getTopics/1"), func(w *httptest.ResponseRecorder) {
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+		assert.Equal(t, Configs.Config.TopicsPerPage, len(responsed.Data))
+	})
+
+	testHTTPResponse(HTTPGet("/api/getTopics/2"), func(w *httptest.ResponseRecorder) {
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+		assert.Equal(t, Configs.Config.TopicsPerPage, len(responsed.Data))
+	})
+
+	testHTTPResponse(HTTPGet("/api/getTopics/4"), func(w *httptest.ResponseRecorder) {
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+		assert.Equal(t, Configs.Config.TopicsPerPage-1, len(responsed.Data))
+	})
+
+	testHTTPResponse(HTTPGet("/api/getTopics/5"), func(w *httptest.ResponseRecorder) {
+		assert.NotEqual(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+		assert.Equal(t, 0, len(responsed.Data))
+	})
+}
+
 func randomIn(min, max int) int {
 	seed := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(seed)
 	return r.Intn(max-min) + min
+}
+
+func BenchmarkGetTopics(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		testHTTPResponse(HTTPGet("/api/getTopics/"), func(w *httptest.ResponseRecorder) {})
+	}
+}
+
+func BenchmarkGetTopicsByRandomPage(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		page := randomIn(1, Topic.GetMaxPage(topics))
+		testHTTPResponse(HTTPGet(fmt.Sprintf("/api/getTopics/%d", page)), func(w *httptest.ResponseRecorder) {})
+	}
 }
 
 func BenchmarkNewTopics(b *testing.B) {
@@ -324,5 +428,18 @@ func BenchmarkDownVotes(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		topicID := randomIn(0, len(topics))
 		testHTTPResponse(HTTPPost(fmt.Sprintf("/api/downVote/%d/", topicID), nil), func(w *httptest.ResponseRecorder) {})
+	}
+}
+
+func BenchmarkGetTopicsAfterManysTopics(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		testHTTPResponse(HTTPGet("/api/getTopics/"), func(w *httptest.ResponseRecorder) {})
+	}
+}
+
+func BenchmarkGetTopicsByRandomPageAfterManysTopics(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		page := randomIn(1, Topic.GetMaxPage(topics))
+		testHTTPResponse(HTTPGet(fmt.Sprintf("/api/getTopics/%d", page)), func(w *httptest.ResponseRecorder) {})
 	}
 }

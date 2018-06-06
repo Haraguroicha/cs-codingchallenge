@@ -1,6 +1,7 @@
 package Topic
 
 import (
+	"math"
 	"sort"
 
 	"github.com/Haraguroicha/cs-codingchallenge/Configs"
@@ -57,6 +58,12 @@ func GetTopic(_topics []*ResponseOfTopic, _topicID int) (*ResponseOfTopic, error
 	}
 	err := Error.RaiseNoTopicError(_topicID)
 	return nil, err
+}
+
+// GetMaxPage is for return the max page number for topics
+func GetMaxPage(_topics []*ResponseOfTopic) int {
+	count := len(_topics)
+	return int(math.Ceil(float64(count) / float64(Configs.Config.TopicsPerPage)))
 }
 
 // sort by multi key is ref from https://golang.org/pkg/sort/

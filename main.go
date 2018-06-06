@@ -72,6 +72,11 @@ func GetTopics(c *gin.Context) {
 		_page = _page[1:len(_page)]
 	}
 	page, err := strconv.Atoi(_page)
+	if page <= 0 {
+		err := Error.RaisePageParameterInvalidError(_page)
+		c.JSON(http.StatusExpectationFailed, err)
+		return
+	}
 	if err != nil {
 		err := Error.RaisePageParameterInvalidError(_page)
 		c.JSON(http.StatusExpectationFailed, err)
