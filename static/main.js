@@ -20,7 +20,7 @@ const createPager = (pages) => {
 const createTopics = (topics) => {
     Array.from(document.querySelectorAll(".vote"))
         .map((v) => v.removeEventListener("click", doVote, false))
-    topicBox.innerHTML = topics.map((t) => `<div class="col col-md-6">
+    topicBox.innerHTML = (topics || []).map((t) => `<div class="col col-md-6">
         <div class="box">
             <span class="topic-id">#${t.topicId}</span>
             <div class="votes">
