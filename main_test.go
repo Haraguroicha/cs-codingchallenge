@@ -58,6 +58,7 @@ func TestGetEmptyTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, 0, len(responsed.Data))
+		assert.Equal(t, []int{1, 0}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/0"), func(w *httptest.ResponseRecorder) {
@@ -66,6 +67,7 @@ func TestGetEmptyTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, 0, len(responsed.Data))
+		assert.Equal(t, (*Pages)(nil), responsed.Pages)
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/-1"), func(w *httptest.ResponseRecorder) {
@@ -74,6 +76,7 @@ func TestGetEmptyTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, 0, len(responsed.Data))
+		assert.Equal(t, (*Pages)(nil), responsed.Pages)
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/a"), func(w *httptest.ResponseRecorder) {
@@ -82,6 +85,7 @@ func TestGetEmptyTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, 0, len(responsed.Data))
+		assert.Equal(t, (*Pages)(nil), responsed.Pages)
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/1"), func(w *httptest.ResponseRecorder) {
@@ -90,6 +94,7 @@ func TestGetEmptyTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, 0, len(responsed.Data))
+		assert.Equal(t, []int{1, 0}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/2"), func(w *httptest.ResponseRecorder) {
@@ -98,6 +103,7 @@ func TestGetEmptyTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, 0, len(responsed.Data))
+		assert.Equal(t, (*Pages)(nil), responsed.Pages)
 	})
 }
 
@@ -330,6 +336,7 @@ func TestGetTopTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, Configs.Config.TopicsPerPage, len(responsed.Data))
+		assert.Equal(t, []int{1, 4}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/0"), func(w *httptest.ResponseRecorder) {
@@ -338,6 +345,7 @@ func TestGetTopTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, 0, len(responsed.Data))
+		assert.Equal(t, (*Pages)(nil), responsed.Pages)
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/-1"), func(w *httptest.ResponseRecorder) {
@@ -346,6 +354,7 @@ func TestGetTopTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, 0, len(responsed.Data))
+		assert.Equal(t, (*Pages)(nil), responsed.Pages)
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/a"), func(w *httptest.ResponseRecorder) {
@@ -354,6 +363,7 @@ func TestGetTopTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, 0, len(responsed.Data))
+		assert.Equal(t, (*Pages)(nil), responsed.Pages)
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/1"), func(w *httptest.ResponseRecorder) {
@@ -362,6 +372,7 @@ func TestGetTopTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, Configs.Config.TopicsPerPage, len(responsed.Data))
+		assert.Equal(t, []int{1, 4}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/2"), func(w *httptest.ResponseRecorder) {
@@ -370,6 +381,7 @@ func TestGetTopTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, Configs.Config.TopicsPerPage, len(responsed.Data))
+		assert.Equal(t, []int{2, 4}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/4"), func(w *httptest.ResponseRecorder) {
@@ -378,6 +390,7 @@ func TestGetTopTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, Configs.Config.TopicsPerPage-1, len(responsed.Data))
+		assert.Equal(t, []int{4, 4}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/5"), func(w *httptest.ResponseRecorder) {
@@ -386,6 +399,7 @@ func TestGetTopTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, 0, len(responsed.Data))
+		assert.Equal(t, (*Pages)(nil), responsed.Pages)
 	})
 }
 

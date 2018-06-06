@@ -57,9 +57,16 @@ func getRouter(isTest bool) *gin.Engine {
 	return router
 }
 
+// Pages for indicates the response position
+type Pages struct {
+	CurrentPage int `json:"currentPage"`
+	LastPage    int `json:"lastPage"`
+}
+
 // QueryResponse is the Response of XHR Request structure, it always have Success field to indicate the request is success or not
 type QueryResponse struct {
 	Data    []*Topic.ResponseOfTopic `json:"data"`
+	Pages   *Pages                   `json:"pages"`
 	Success bool                     `json:"success"`
 }
 
@@ -92,7 +99,14 @@ func GetTopics(c *gin.Context) {
 	}
 	_topics := topics[starts:maxTopicsCount]
 
-	c.JSON(http.StatusOK, &QueryResponse{Data: _topics, Success: true})
+	c.JSON(http.StatusOK, &QueryResponse{
+		Data: _topics,
+		Pages: &Pages{
+			CurrentPage: page,
+			LastPage:    Topic.GetMaxPage(topics),
+		},
+		Success: true,
+	})
 }
 
 // NewTopic Handler
