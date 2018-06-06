@@ -18,3 +18,38 @@
 .navbar + .jumbotron {
   margin-top: -20px;
 }
+.topic-input {
+  width: 100%;
+  height: 80px;
+  color: black;
+}
+.left-count {
+  width: 300px;
+  display: block;
+  float: left;
+  text-align: left;
+}
+.topic-submit {
+  float: right;
+}
+#topics.row .col {
+  padding: 15px 7px;
+}
+#topics.row .col .box {
+  background-color: lightgray;
+  padding: 25px 15px;
+}
+#topics.row .col .box hr {
+  height: 1px;
+  margin: 10px;
+}
+#topics.row .col .box .votes {
+  float: right;
+}
+#topics.row .col .box .votes .vote {
+  color: gray;
+}
+#topics.row .col .box .votes .vote:hover {
+  color: black;
+  cursor: pointer;
+}

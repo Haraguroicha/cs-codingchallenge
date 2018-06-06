@@ -43,7 +43,7 @@ func getRouter(isTest bool) *gin.Engine {
 	router.Static("/static", "static")
 
 	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl.html", nil)
+		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{"Config": Configs.Config})
 	})
 
 	router.GET("/api/getTopics/*page", GetTopics)

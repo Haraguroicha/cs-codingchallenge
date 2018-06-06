@@ -2,9 +2,19 @@
 
 <div class="jumbotron text-center">
   <div class="container">
-
+    <h3>Submit for your new topic:</h3>
+    <textarea name="topic" id="topic" class="topic-input"></textarea>
+    <span id="left" class="left-count"></span>
+    <input class="btn btn-lg btn-primary topic-submit" type="submit" value="Submit" />
   </div>
 </div>
 <div class="container">
-
+  <select name="pager" id="pager"></select>
+  <hr />
+  <div id="topics" class="row"></div>
 </div>
+
+<script>
+  const config = {{ .Config }};
+</script>
+<script src="static/main.js"></script>
