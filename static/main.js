@@ -46,11 +46,10 @@ const makeTopics = (topics) => {
     if (topics.success) {
         createPager(topics.pages);
         createTopics(topics.data);
-        topic.value = "";
-        calcLeft();
     } else {
         throw topics.message;
     }
+    return topics;
 };
 const getTopics = (page) => {
     page = page || '1';
@@ -69,6 +68,12 @@ const newTopic = (title) => {
     })
         .then((response) => response.json())
         .then(makeTopics)
+        .then((topics) => {
+            if (topics.success) {
+                topic.value = "";
+                calcLeft();
+            }
+        })
         .catch((e) => {
             console.error(e);
             alert(e);
