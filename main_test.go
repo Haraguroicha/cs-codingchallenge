@@ -228,7 +228,7 @@ func TestUpVotes(t *testing.T) {
 
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, []int{3, 0}, _topicIDs[0:2])
+		assert.Equal(t, []int{3, 1}, _topicIDs[0:2])
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[0].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[1].Votes)
 		t.Log("TopicIDs", Topic.GetTopicIDs(topics))
@@ -242,7 +242,7 @@ func TestUpVotes(t *testing.T) {
 
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, []int{3, 4, 0}, _topicIDs[0:3])
+		assert.Equal(t, []int{3, 4, 1}, _topicIDs[0:3])
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[0].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[1].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[2].Votes)
@@ -257,7 +257,7 @@ func TestUpVotes(t *testing.T) {
 
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, []int{4, 3, 0}, _topicIDs[0:3])
+		assert.Equal(t, []int{4, 3, 1}, _topicIDs[0:3])
 		assert.Equal(t, &Topic.Votes{UpVotes: 2, DownVotes: 0, SumVotes: 2}, responsed.Data[0].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[1].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[2].Votes)
@@ -282,7 +282,7 @@ func TestDownVotes(t *testing.T) {
 
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, []int{4, 3, 0}, _topicIDs[0:3])
+		assert.Equal(t, []int{4, 3, 1}, _topicIDs[0:3])
 		assert.Equal(t, &Topic.Votes{UpVotes: 2, DownVotes: 1, SumVotes: 1}, responsed.Data[0].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[1].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[2].Votes)
@@ -297,7 +297,7 @@ func TestDownVotes(t *testing.T) {
 
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, []int{3, 4, 0}, _topicIDs[0:3])
+		assert.Equal(t, []int{3, 4, 1}, _topicIDs[0:3])
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[0].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 2, DownVotes: 2, SumVotes: 0}, responsed.Data[1].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[2].Votes)
@@ -312,7 +312,7 @@ func TestDownVotes(t *testing.T) {
 
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, []int{3, 0, 1}, _topicIDs[0:3])
+		assert.Equal(t, []int{3, 1, 2}, _topicIDs[0:3])
 		assert.Equal(t, 4, topics[len(topics)-1].TopicID)
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[0].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[1].Votes)
