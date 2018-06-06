@@ -3,6 +3,7 @@ package Topic
 import (
 	"math"
 	"sort"
+	"unicode/utf8"
 
 	"github.com/Haraguroicha/cs-codingchallenge/Configs"
 	"github.com/Haraguroicha/cs-codingchallenge/Error"
@@ -23,7 +24,7 @@ type ResponseOfTopic struct {
 
 // NewTopic is to create a new topic
 func NewTopic(_topic string) (*ResponseOfTopic, error) {
-	if len(_topic) > Configs.Config.MaximumTopicLength {
+	if utf8.RuneCountInString(_topic) > Configs.Config.MaximumTopicLength {
 		err := Error.RaiseExceededTopicLengthError(Configs.Config.MaximumTopicLength)
 		return nil, err
 	}
