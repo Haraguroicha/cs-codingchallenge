@@ -63,6 +63,9 @@ func GetTopic(_topics []*ResponseOfTopic, _topicID int) (*ResponseOfTopic, error
 // GetMaxPage is for return the max page number for topics
 func GetMaxPage(_topics []*ResponseOfTopic) int {
 	count := len(_topics)
+	if count == 0 {
+		return 0
+	}
 	return int(math.Ceil(float64(count) / float64(Configs.Config.TopicsPerPage)))
 }
 
