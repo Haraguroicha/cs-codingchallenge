@@ -174,6 +174,56 @@ func TestNewTopicLongAndWontSuccess(t *testing.T) {
 	})
 }
 
+// trying to add a long topic and just before the length of exceed length in chinese characters
+func TestNewTopicInChinese(t *testing.T) {
+	topicTitle := "測試"
+	testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
+		TopicTitle: topicTitle,
+	}), func(w *httptest.ResponseRecorder) {
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+
+		assert.Equal(t, true, responsed.Success)
+		assert.Equal(t, 4, len(responsed.Data))
+		assert.Equal(t, topicTitle, responsed.Data[3].TopicTitle)
+	})
+}
+
+// trying to add a long topic and just before the length of exceed length in chinese characters
+func TestNewTopicLongInChinese(t *testing.T) {
+	topicTitle := "測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試。"
+	testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
+		TopicTitle: topicTitle,
+	}), func(w *httptest.ResponseRecorder) {
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+
+		assert.Equal(t, true, responsed.Success)
+		assert.Equal(t, 5, len(responsed.Data))
+		assert.Equal(t, topicTitle, responsed.Data[4].TopicTitle)
+	})
+}
+
+// trying to add a long topic and it was exceed of the maximum length in chinese characters
+func TestNewTopicLongAndWontSuccessInChinese(t *testing.T) {
+	topicTitle := "測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試！！"
+	testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
+		TopicTitle: topicTitle,
+	}), func(w *httptest.ResponseRecorder) {
+		assert.NotEqual(t, http.StatusOK, w.Code)
+
+		var responsed *QueryResponse
+		json.Unmarshal(w.Body.Bytes(), &responsed)
+
+		assert.Equal(t, false, responsed.Success)
+		assert.Equal(t, 0, len(responsed.Data))
+	})
+}
+
 // trying to add a normal length topic and it should success
 func TestNewTopicAsNormalAgain(t *testing.T) {
 	topicTitle := "test again"
@@ -186,8 +236,8 @@ func TestNewTopicAsNormalAgain(t *testing.T) {
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 
 		assert.Equal(t, true, responsed.Success)
-		assert.Equal(t, 4, len(responsed.Data))
-		assert.Equal(t, topicTitle, responsed.Data[3].TopicTitle)
+		assert.Equal(t, 6, len(responsed.Data))
+		assert.Equal(t, topicTitle, responsed.Data[5].TopicTitle)
 	})
 }
 
@@ -204,7 +254,7 @@ func addManysTopic(t *testing.T, startAt int, additionTest func(*testing.T, stri
 			json.Unmarshal(w.Body.Bytes(), &responsed)
 
 			assert.Equal(t, true, responsed.Success)
-			assert.Equal(t, math.Min(float64(Configs.Config.TopicsPerPage), float64(4+i+startAt)), float64(len(responsed.Data)))
+			assert.Equal(t, math.Min(float64(Configs.Config.TopicsPerPage), float64(6+i+startAt)), float64(len(responsed.Data)))
 			additionTest(t, topicTitle, responsed)
 			t.Log("TopicIDs", Topic.GetTopicIDs(topics))
 		})
@@ -336,7 +386,7 @@ func TestGetTopTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, Configs.Config.TopicsPerPage, len(responsed.Data))
-		assert.Equal(t, []int{1, 4}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
+		assert.Equal(t, []int{1, 5}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/0"), func(w *httptest.ResponseRecorder) {
@@ -372,7 +422,7 @@ func TestGetTopTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, Configs.Config.TopicsPerPage, len(responsed.Data))
-		assert.Equal(t, []int{1, 4}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
+		assert.Equal(t, []int{1, 5}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/2"), func(w *httptest.ResponseRecorder) {
@@ -381,19 +431,19 @@ func TestGetTopTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, Configs.Config.TopicsPerPage, len(responsed.Data))
-		assert.Equal(t, []int{2, 4}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
+		assert.Equal(t, []int{2, 5}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
-	testHTTPResponse(HTTPGet("/api/getTopics/4"), func(w *httptest.ResponseRecorder) {
+	testHTTPResponse(HTTPGet("/api/getTopics/5"), func(w *httptest.ResponseRecorder) {
 		assert.Equal(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
-		assert.Equal(t, Configs.Config.TopicsPerPage-1, len(responsed.Data))
-		assert.Equal(t, []int{4, 4}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
+		assert.Equal(t, 1, len(responsed.Data))
+		assert.Equal(t, []int{5, 5}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
-	testHTTPResponse(HTTPGet("/api/getTopics/5"), func(w *httptest.ResponseRecorder) {
+	testHTTPResponse(HTTPGet("/api/getTopics/6"), func(w *httptest.ResponseRecorder) {
 		assert.NotEqual(t, http.StatusOK, w.Code)
 
 		var responsed *QueryResponse
