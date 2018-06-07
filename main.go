@@ -14,6 +14,7 @@ import (
 	_ "github.com/heroku/x/hmetrics/onload"
 )
 
+// topics for shared variable between main program and unit test
 var topics []*Topic.ResponseOfTopic
 
 func main() {
@@ -23,11 +24,11 @@ func main() {
 		log.Fatal("$PORT must be set")
 	}
 
+	// set config read from conf/config.yaml to Congigs package shared variable
 	Configs.Config = Configs.NewConfig("conf/config.yaml")
 
-	topics := []*Topic.ResponseOfTopic{}
-
-	log.Printf("Topic Count: %d", len(topics))
+	// initial topics as empty array
+	topics = []*Topic.ResponseOfTopic{}
 
 	router := getRouter(false)
 
@@ -43,6 +44,7 @@ func getRouter(isTest bool) *gin.Engine {
 	router.Static("/static", "static")
 
 	router.GET("/", func(c *gin.Context) {
+		// pass Config data to template
 		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{"Config": Configs.Config})
 	})
 
@@ -63,7 +65,9 @@ type Pages struct {
 	LastPage    int `json:"lastPage"`
 }
 
-// QueryResponse is the Response of XHR Request structure, it always have Success field to indicate the request is success or not
+// QueryResponse is the Response of XHR Request structure,
+// it always have Success field to indicate the request is success or not,
+// and there have Pages structure to indicate current page and last page count
 type QueryResponse struct {
 	Data    []*Topic.ResponseOfTopic `json:"data"`
 	Pages   *Pages                   `json:"pages"`
@@ -73,30 +77,38 @@ type QueryResponse struct {
 // GetTopics Handler
 func GetTopics(c *gin.Context) {
 	var _page = c.Param("page")
+	// param read page always prefix a slash `/`, we need to strip that
 	if len(_page) <= 1 {
 		_page = "1"
 	} else {
 		_page = _page[1:len(_page)]
 	}
 	page, err := strconv.Atoi(_page)
-	if page <= 0 {
-		err := Error.RaisePageParameterInvalidError(_page)
-		c.JSON(http.StatusExpectationFailed, err)
-		return
-	}
+	// after pre-process the page parameter, convert to int
+	// if there has some error, e.g. non-numeric character included, raise the error
 	if err != nil {
 		err := Error.RaisePageParameterInvalidError(_page)
 		c.JSON(http.StatusExpectationFailed, err)
 		return
 	}
-	// just trying to get first we want, there can not sort during users get the top list, that will be an impact to the system
+	// if there has less then 1, e.g. -1 or 0, also raise the error
+	if page <= 0 {
+		err := Error.RaisePageParameterInvalidError(_page)
+		c.JSON(http.StatusExpectationFailed, err)
+		return
+	}
+	// just trying to get first we want,
+	// because we can not sort the data structure during users get the top list,
+	// that will be an impact to the system
 	starts := Configs.Config.TopicsPerPage * (page - 1)
 	maxTopicsCount := int(math.Min(float64(starts+Configs.Config.TopicsPerPage), float64(len(topics))))
+	// if we request a page is out of bound, raise error
 	if starts > len(topics) {
 		err := Error.RaisePageInvalidError(_page)
 		c.JSON(http.StatusExpectationFailed, err)
 		return
 	}
+	// strip the range only we want
 	_topics := topics[starts:maxTopicsCount]
 
 	c.JSON(http.StatusOK, &QueryResponse{

@@ -34,6 +34,40 @@ demo site is available at https://carousellcodingchallenge.herokuapp.com/
 3. Start local web server for debugging by `make debug`
 4. Browse at http://localhost:5000
 
+### Project structure
+
+* `conf`
+
+    there only a configure file named `config.yaml` inside, the config file structure may reference to `Configs/Configs.go`
+
+* `Configs`
+
+    the config structure, and config store
+
+* `Error`
+
+    the error message structure and its messages
+
+* `static`
+
+    frontend used files, e.g. css and javascript files
+
+* `templates`
+
+    the frontend page templates
+
+* `Topic`
+
+    the topic data structure and vote data structure are inside
+
+* `Utilities`
+
+    map, reduce and filter utility functions, in this project only used map function
+
+* `vendor`
+
+    the packages which we used inside
+
 ### APIs
 
 * `GET /api/getTopics/*page`

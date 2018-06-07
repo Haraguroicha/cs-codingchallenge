@@ -24,15 +24,16 @@ type ResponseOfTopic struct {
 
 // NewTopic is to create a new topic
 func NewTopic(_topic string) (*ResponseOfTopic, error) {
+	// only raise error when character count out of the config indicates value
 	if utf8.RuneCountInString(_topic) > Configs.Config.MaximumTopicLength {
 		err := Error.RaiseExceededTopicLengthError(Configs.Config.MaximumTopicLength)
 		return nil, err
 	}
 
-	votes := &Votes{0, 0, 0}
+	// initial votes as starts at 0 inside the topic
 	topic := &ResponseOfTopic{
 		TopicTitle: _topic,
-		Votes:      votes,
+		Votes:      &Votes{0, 0, 0},
 	}
 
 	return topic, nil
@@ -40,23 +41,28 @@ func NewTopic(_topic string) (*ResponseOfTopic, error) {
 
 // GetTopicIDs for only map the TopicID as array
 func GetTopicIDs(_topics []*ResponseOfTopic) []int {
+	// read id as interface array
 	_ids := Utilities.Map(_topics, func(val interface{}) interface{} {
 		return val.(*ResponseOfTopic).TopicID
 	}).([]interface{})
+	// convert back to int array
 	_topicIDs := make([]int, len(_ids))
 	for i, v := range _ids {
 		_topicIDs[i] = v.(int)
 	}
+	// return the int array
 	return _topicIDs
 }
 
 // GetTopic from Topics
 func GetTopic(_topics []*ResponseOfTopic, _topicID int) (*ResponseOfTopic, error) {
+	// find the topic by id
 	for _, t := range _topics {
 		if t.TopicID == _topicID {
 			return t, nil
 		}
 	}
+	// only raise error when we not found the requested topic id
 	err := Error.RaiseNoTopicError(_topicID)
 	return nil, err
 }
