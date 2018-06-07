@@ -17,7 +17,7 @@ type RequestOfTopic struct {
 
 // ResponseOfTopic struct
 type ResponseOfTopic struct {
-	TopicID    int    `json:"topicId"`
+	TopicID    uint64 `json:"topicId"`
 	TopicTitle string `json:"topicTitle"`
 	Votes      *Votes `json:"votes"`
 }
@@ -25,7 +25,7 @@ type ResponseOfTopic struct {
 // NewTopic is to create a new topic
 func NewTopic(_topic string) (*ResponseOfTopic, error) {
 	// only raise error when character count out of the config indicates value
-	if utf8.RuneCountInString(_topic) > Configs.Config.MaximumTopicLength {
+	if uint64(utf8.RuneCountInString(_topic)) > Configs.Config.MaximumTopicLength {
 		err := Error.RaiseExceededTopicLengthError(Configs.Config.MaximumTopicLength)
 		return nil, err
 	}
@@ -40,22 +40,22 @@ func NewTopic(_topic string) (*ResponseOfTopic, error) {
 }
 
 // GetTopicIDs for only map the TopicID as array
-func GetTopicIDs(_topics []*ResponseOfTopic) []int {
+func GetTopicIDs(_topics []*ResponseOfTopic) []uint64 {
 	// read id as interface array
 	_ids := Utilities.Map(_topics, func(val interface{}) interface{} {
 		return val.(*ResponseOfTopic).TopicID
 	}).([]interface{})
 	// convert back to int array
-	_topicIDs := make([]int, len(_ids))
+	_topicIDs := make([]uint64, len(_ids))
 	for i, v := range _ids {
-		_topicIDs[i] = v.(int)
+		_topicIDs[i] = v.(uint64)
 	}
 	// return the int array
 	return _topicIDs
 }
 
 // GetTopic from Topics
-func GetTopic(_topics []*ResponseOfTopic, _topicID int) (*ResponseOfTopic, error) {
+func GetTopic(_topics []*ResponseOfTopic, _topicID uint64) (*ResponseOfTopic, error) {
 	// find the topic by id
 	for _, t := range _topics {
 		if t.TopicID == _topicID {
@@ -68,12 +68,12 @@ func GetTopic(_topics []*ResponseOfTopic, _topicID int) (*ResponseOfTopic, error
 }
 
 // GetMaxPage is for return the max page number for topics
-func GetMaxPage(_topics []*ResponseOfTopic) int {
+func GetMaxPage(_topics []*ResponseOfTopic) uint64 {
 	count := len(_topics)
 	if count == 0 {
 		return 0
 	}
-	return int(math.Ceil(float64(count) / float64(Configs.Config.TopicsPerPage)))
+	return uint64(math.Ceil(float64(count) / float64(Configs.Config.TopicsPerPage)))
 }
 
 // sort by multi key is ref from https://golang.org/pkg/sort/

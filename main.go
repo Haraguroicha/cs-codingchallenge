@@ -61,8 +61,8 @@ func getRouter(isTest bool) *gin.Engine {
 
 // Pages for indicates the response position
 type Pages struct {
-	CurrentPage int `json:"currentPage"`
-	LastPage    int `json:"lastPage"`
+	CurrentPage uint64 `json:"currentPage"`
+	LastPage    uint64 `json:"lastPage"`
 }
 
 // QueryResponse is the Response of XHR Request structure,
@@ -83,7 +83,7 @@ func GetTopics(c *gin.Context) {
 	} else {
 		_page = _page[1:len(_page)]
 	}
-	page, err := strconv.Atoi(_page)
+	page, err := strconv.ParseUint(_page, 10, 64)
 	// after pre-process the page parameter, convert to int
 	// if there has some error, e.g. non-numeric character included, raise the error
 	if err != nil {
@@ -101,9 +101,9 @@ func GetTopics(c *gin.Context) {
 	// because we can not sort the data structure during users get the top list,
 	// that will be an impact to the system
 	starts := Configs.Config.TopicsPerPage * (page - 1)
-	maxTopicsCount := int(math.Min(float64(starts+Configs.Config.TopicsPerPage), float64(len(topics))))
+	maxTopicsCount := uint64(math.Min(float64(starts+Configs.Config.TopicsPerPage), float64(len(topics))))
 	// if we request a page is out of bound, raise error
-	if starts > len(topics) {
+	if starts > uint64(len(topics)) {
 		err := Error.RaisePageInvalidError(_page)
 		c.JSON(http.StatusExpectationFailed, err)
 		return
@@ -130,44 +130,43 @@ func NewTopic(c *gin.Context) {
 		c.JSON(http.StatusExpectationFailed, err)
 		return
 	}
-	topic.TopicID = len(topics) + 1
+	topic.TopicID = uint64(len(topics)) + 1
 	topics = append(topics, topic)
 	Topic.SortTopics(topics)
 	GetTopics(c)
 }
 
-// UpTopic Handler
-func UpTopic(c *gin.Context) {
-	topicID, err := strconv.Atoi(c.Param("topic"))
+func getTopicByRequest(c *gin.Context) *Topic.ResponseOfTopic {
+	topicID, err := strconv.ParseUint(c.Param("topic"), 10, 64)
 	if err != nil {
 		err := Error.RaiseTopicParameterInvalidError(c.Param("topic"))
 		c.JSON(http.StatusExpectationFailed, err)
-		return
+		return nil
 	}
 	topic, err := Topic.GetTopic(topics, topicID)
 	if err != nil {
 		c.JSON(http.StatusExpectationFailed, err)
-		return
+		return nil
 	}
-	topic.Votes.SetUpVote()
-	Topic.SortTopics(topics)
-	GetTopics(c)
+	return topic
+}
+
+// UpTopic Handler
+func UpTopic(c *gin.Context) {
+	topic := getTopicByRequest(c)
+	if topic != nil {
+		topic.Votes.SetUpVote()
+		Topic.SortTopics(topics)
+		GetTopics(c)
+	}
 }
 
 // DownTopic Handler
 func DownTopic(c *gin.Context) {
-	topicID, err := strconv.Atoi(c.Param("topic"))
-	if err != nil {
-		err := Error.RaiseTopicParameterInvalidError(c.Param("topic"))
-		c.JSON(http.StatusExpectationFailed, err)
-		return
+	topic := getTopicByRequest(c)
+	if topic != nil {
+		topic.Votes.SetDownVote()
+		Topic.SortTopics(topics)
+		GetTopics(c)
 	}
-	topic, err := Topic.GetTopic(topics, topicID)
-	if err != nil {
-		c.JSON(http.StatusExpectationFailed, err)
-		return
-	}
-	topic.Votes.SetDownVote()
-	Topic.SortTopics(topics)
-	GetTopics(c)
 }

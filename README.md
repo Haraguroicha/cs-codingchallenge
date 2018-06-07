@@ -62,7 +62,7 @@ demo site is available at https://carousellcodingchallenge.herokuapp.com/
 
 * `Utilities`
 
-    map, reduce and filter utility functions, in this project only used map function
+    Map, Reduce, Filter and RandomIn utility functions, in this project only used Map function and RandomIn is used in test/benchmark
 
 * `vendor`
 
@@ -183,3 +183,4 @@ demo site is available at https://carousellcodingchallenge.herokuapp.com/
 
 1. No Lock implementation for add or voting the topics data during its sorting by previous request
 2. Underlying the `sort` package to sort the topics data may bound the performance during large data transation
+3. Topic ID is a sequential unsigned integer value from 1, which will bound when topic was created out of (18,446,744,073,709,551,615 - 1) topics

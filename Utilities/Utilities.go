@@ -1,7 +1,9 @@
 package Utilities
 
 import (
+	"math/rand"
 	"reflect"
+	"time"
 )
 
 // from: https://gist.github.com/rafkhan/6501567
@@ -47,4 +49,21 @@ func Filter(in interface{}, fn filterf) interface{} {
 	}
 
 	return out
+}
+
+// RandomIn is for random number in unsign integer in 64 bit length
+// ref: https://stackoverflow.com/a/47865090
+func RandomIn(min, max uint64) uint64 {
+	const maxInt64 uint64 = 1<<63 - 1
+	seed := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(seed)
+	n := max - min
+	if n < maxInt64 {
+		return uint64(r.Int63n(int64(n + 1)))
+	}
+	x := r.Uint64()
+	for x > n {
+		x = r.Uint64()
+	}
+	return x
 }

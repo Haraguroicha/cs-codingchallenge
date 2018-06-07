@@ -16,7 +16,7 @@ func (e *ErrorMessage) Error() string {
 }
 
 // RaiseExceededTopicLengthError for raise ExceededTopicLengthError
-func RaiseExceededTopicLengthError(length int) *ErrorMessage {
+func RaiseExceededTopicLengthError(length uint64) *ErrorMessage {
 	return &ErrorMessage{
 		Title:   "ExceededTopicLengthError",
 		Message: fmt.Sprintf("The Topic length exceeded to %d characters", length),
@@ -25,7 +25,7 @@ func RaiseExceededTopicLengthError(length int) *ErrorMessage {
 }
 
 // RaiseNoTopicError for raise NoTopicError
-func RaiseNoTopicError(topicID int) *ErrorMessage {
+func RaiseNoTopicError(topicID uint64) *ErrorMessage {
 	return &ErrorMessage{
 		Title:   "NoTopicError",
 		Message: fmt.Sprintf("The Topic Not Found for TopicID %d", topicID),

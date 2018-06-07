@@ -6,14 +6,13 @@ import (
 	"fmt"
 	"io"
 	"math"
-	"math/rand"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/Haraguroicha/cs-codingchallenge/Configs"
 	"github.com/Haraguroicha/cs-codingchallenge/Topic"
+	"github.com/Haraguroicha/cs-codingchallenge/Utilities"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
@@ -58,7 +57,7 @@ func TestGetEmptyTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, 0, len(responsed.Data))
-		assert.Equal(t, []int{1, 0}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
+		assert.Equal(t, []uint64{1, 0}, []uint64{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/0"), func(w *httptest.ResponseRecorder) {
@@ -94,7 +93,7 @@ func TestGetEmptyTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, 0, len(responsed.Data))
-		assert.Equal(t, []int{1, 0}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
+		assert.Equal(t, []uint64{1, 0}, []uint64{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/2"), func(w *httptest.ResponseRecorder) {
@@ -241,9 +240,9 @@ func TestNewTopicAsNormalAgain(t *testing.T) {
 	})
 }
 
-func addManysTopic(t *testing.T, startAt int, additionTest func(*testing.T, string, *QueryResponse)) {
+func addManysTopic(t *testing.T, startAt uint64, additionTest func(*testing.T, string, *QueryResponse)) {
 	totalTopicsToAdd := Configs.Config.TopicsPerPage + 5
-	for i := 1; i <= totalTopicsToAdd; i++ {
+	for i := uint64(1); i <= totalTopicsToAdd; i++ {
 		topicTitle := fmt.Sprintf("manys-topic-%d", i+startAt)
 		testHTTPResponse(HTTPPost("/api/newTopic", &Topic.RequestOfTopic{
 			TopicTitle: topicTitle,
@@ -278,7 +277,7 @@ func TestUpVotes(t *testing.T) {
 
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, []int{3, 1}, _topicIDs[0:2])
+		assert.Equal(t, []uint64{3, 1}, _topicIDs[0:2])
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[0].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[1].Votes)
 		t.Log("TopicIDs", Topic.GetTopicIDs(topics))
@@ -292,7 +291,7 @@ func TestUpVotes(t *testing.T) {
 
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, []int{3, 4, 1}, _topicIDs[0:3])
+		assert.Equal(t, []uint64{3, 4, 1}, _topicIDs[0:3])
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[0].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[1].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[2].Votes)
@@ -307,7 +306,7 @@ func TestUpVotes(t *testing.T) {
 
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, []int{4, 3, 1}, _topicIDs[0:3])
+		assert.Equal(t, []uint64{4, 3, 1}, _topicIDs[0:3])
 		assert.Equal(t, &Topic.Votes{UpVotes: 2, DownVotes: 0, SumVotes: 2}, responsed.Data[0].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[1].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[2].Votes)
@@ -332,7 +331,7 @@ func TestDownVotes(t *testing.T) {
 
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, []int{4, 3, 1}, _topicIDs[0:3])
+		assert.Equal(t, []uint64{4, 3, 1}, _topicIDs[0:3])
 		assert.Equal(t, &Topic.Votes{UpVotes: 2, DownVotes: 1, SumVotes: 1}, responsed.Data[0].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[1].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[2].Votes)
@@ -347,7 +346,7 @@ func TestDownVotes(t *testing.T) {
 
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, []int{3, 4, 1}, _topicIDs[0:3])
+		assert.Equal(t, []uint64{3, 4, 1}, _topicIDs[0:3])
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[0].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 2, DownVotes: 2, SumVotes: 0}, responsed.Data[1].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[2].Votes)
@@ -362,8 +361,8 @@ func TestDownVotes(t *testing.T) {
 
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
-		assert.Equal(t, []int{3, 1, 2}, _topicIDs[0:3])
-		assert.Equal(t, 4, topics[len(topics)-1].TopicID)
+		assert.Equal(t, []uint64{3, 1, 2}, _topicIDs[0:3])
+		assert.Equal(t, uint64(4), topics[len(topics)-1].TopicID)
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[0].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[1].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 2, DownVotes: 3, SumVotes: -1}, topics[len(topics)-1].Votes)
@@ -385,8 +384,8 @@ func TestGetTopTopics(t *testing.T) {
 
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
-		assert.Equal(t, Configs.Config.TopicsPerPage, len(responsed.Data))
-		assert.Equal(t, []int{1, 5}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
+		assert.Equal(t, Configs.Config.TopicsPerPage, uint64(len(responsed.Data)))
+		assert.Equal(t, []uint64{1, 5}, []uint64{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/0"), func(w *httptest.ResponseRecorder) {
@@ -421,8 +420,8 @@ func TestGetTopTopics(t *testing.T) {
 
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
-		assert.Equal(t, Configs.Config.TopicsPerPage, len(responsed.Data))
-		assert.Equal(t, []int{1, 5}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
+		assert.Equal(t, Configs.Config.TopicsPerPage, uint64(len(responsed.Data)))
+		assert.Equal(t, []uint64{1, 5}, []uint64{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/2"), func(w *httptest.ResponseRecorder) {
@@ -430,8 +429,8 @@ func TestGetTopTopics(t *testing.T) {
 
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
-		assert.Equal(t, Configs.Config.TopicsPerPage, len(responsed.Data))
-		assert.Equal(t, []int{2, 5}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
+		assert.Equal(t, Configs.Config.TopicsPerPage, uint64(len(responsed.Data)))
+		assert.Equal(t, []uint64{2, 5}, []uint64{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/5"), func(w *httptest.ResponseRecorder) {
@@ -440,7 +439,7 @@ func TestGetTopTopics(t *testing.T) {
 		var responsed *QueryResponse
 		json.Unmarshal(w.Body.Bytes(), &responsed)
 		assert.Equal(t, 1, len(responsed.Data))
-		assert.Equal(t, []int{5, 5}, []int{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
+		assert.Equal(t, []uint64{5, 5}, []uint64{responsed.Pages.CurrentPage, responsed.Pages.LastPage})
 	})
 
 	testHTTPResponse(HTTPGet("/api/getTopics/6"), func(w *httptest.ResponseRecorder) {
@@ -453,12 +452,6 @@ func TestGetTopTopics(t *testing.T) {
 	})
 }
 
-func randomIn(min, max int) int {
-	seed := rand.NewSource(time.Now().UnixNano())
-	r := rand.New(seed)
-	return r.Intn(max-min) + min
-}
-
 func BenchmarkGetTopics(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		testHTTPResponse(HTTPGet("/api/getTopics/"), func(w *httptest.ResponseRecorder) {})
@@ -467,8 +460,22 @@ func BenchmarkGetTopics(b *testing.B) {
 
 func BenchmarkGetTopicsByRandomPage(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		page := randomIn(1, Topic.GetMaxPage(topics))
+		page := Utilities.RandomIn(1, Topic.GetMaxPage(topics))
 		testHTTPResponse(HTTPGet(fmt.Sprintf("/api/getTopics/%d", page)), func(w *httptest.ResponseRecorder) {})
+	}
+}
+
+func BenchmarkUpVotes(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		topicID := Utilities.RandomIn(0, uint64(len(topics)))
+		testHTTPResponse(HTTPPost(fmt.Sprintf("/api/upVote/%d/", topicID), nil), func(w *httptest.ResponseRecorder) {})
+	}
+}
+
+func BenchmarkDownVotes(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		topicID := Utilities.RandomIn(0, uint64(len(topics)))
+		testHTTPResponse(HTTPPost(fmt.Sprintf("/api/downVote/%d/", topicID), nil), func(w *httptest.ResponseRecorder) {})
 	}
 }
 
@@ -481,16 +488,16 @@ func BenchmarkNewTopics(b *testing.B) {
 	}
 }
 
-func BenchmarkUpVotes(b *testing.B) {
+func BenchmarkUpVotesAfterManysTopics(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		topicID := randomIn(0, len(topics))
+		topicID := Utilities.RandomIn(0, uint64(len(topics)))
 		testHTTPResponse(HTTPPost(fmt.Sprintf("/api/upVote/%d/", topicID), nil), func(w *httptest.ResponseRecorder) {})
 	}
 }
 
-func BenchmarkDownVotes(b *testing.B) {
+func BenchmarkDownVotesAfterManysTopics(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		topicID := randomIn(0, len(topics))
+		topicID := Utilities.RandomIn(0, uint64(len(topics)))
 		testHTTPResponse(HTTPPost(fmt.Sprintf("/api/downVote/%d/", topicID), nil), func(w *httptest.ResponseRecorder) {})
 	}
 }
@@ -503,7 +510,7 @@ func BenchmarkGetTopicsAfterManysTopics(b *testing.B) {
 
 func BenchmarkGetTopicsByRandomPageAfterManysTopics(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		page := randomIn(1, Topic.GetMaxPage(topics))
+		page := Utilities.RandomIn(1, Topic.GetMaxPage(topics))
 		testHTTPResponse(HTTPGet(fmt.Sprintf("/api/getTopics/%d", page)), func(w *httptest.ResponseRecorder) {})
 	}
 }
