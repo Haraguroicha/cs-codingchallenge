@@ -89,6 +89,10 @@ demo site is available at https://carousellcodingchallenge.herokuapp.com/
                 }
             }
         ],
+        "pages": {
+            "currentPage": 1,
+            "lastPage": 1
+        },
         "success": true
     }
     ```
@@ -118,6 +122,10 @@ demo site is available at https://carousellcodingchallenge.herokuapp.com/
                 }
             }
         ],
+        "pages": {
+            "currentPage": 1,
+            "lastPage": 1
+        },
         "success": true
     }
     ```
