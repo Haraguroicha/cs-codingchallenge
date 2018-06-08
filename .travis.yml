@@ -5,9 +5,11 @@ go:
 
 before_install:
   - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+  - mkdir -p $GOPATH/src/github.com/Haraguroicha
+  - ln -s $PWD $GOPATH/src/github.com/Haraguroicha/cs-codingchallenge
 
 install:
   - dep ensure -v -vendor-only
 
 script:
-  - go test -v -bench=. -benchmem
+  - make test

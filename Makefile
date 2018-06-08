@@ -18,3 +18,6 @@ local: clean
 
 debug: local
 	heroku local --procfile Procfile_debug
+
+test:
+	go test -v -bench=. -benchmem -cover ./...

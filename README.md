@@ -40,13 +40,25 @@ demo site is available at https://carousellcodingchallenge.herokuapp.com/
 
     there only a configure file named `config.yaml` inside, the config file structure may reference to `Configs/Configs.go`
 
-* `Configs`
+* `Goddit`
 
-    the config structure, and config store
+    main program
 
-* `Error`
+    * `Configs`
 
-    the error message structure and its messages
+        the config structure, and config store
+
+    * `Error`
+
+        the error message structure and its messages
+
+    * `Topic`
+
+        the topic data structure and vote data structure are inside
+
+    * `Utilities`
+
+        Map, Reduce, Filter and RandomIn utility functions, in this project only used Map function and RandomIn is used in test/benchmark
 
 * `static`
 
@@ -55,15 +67,6 @@ demo site is available at https://carousellcodingchallenge.herokuapp.com/
 * `templates`
 
     the frontend page templates
-
-* `Topic`
-
-    the topic data structure and vote data structure are inside
-
-* `Utilities`
-
-    Map, Reduce, Filter and RandomIn utility functions, in this project only used Map function and RandomIn is used in test/benchmark
-
 * `vendor`
 
     the packages which we used inside
