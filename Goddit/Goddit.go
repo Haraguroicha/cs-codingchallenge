@@ -25,6 +25,21 @@ type Goddit struct {
 	isTest bool
 }
 
+// Pages for indicates the response position
+type Pages struct {
+	CurrentPage uint64 `json:"currentPage"`
+	LastPage    uint64 `json:"lastPage"`
+}
+
+// QueryResponse is the Response of XHR Request structure,
+// it always have Success field to indicate the request is success or not,
+// and there have Pages structure to indicate current page and last page count
+type QueryResponse struct {
+	Data    []*Topic.ResponseOfTopic `json:"data"`
+	Pages   *Pages                   `json:"pages"`
+	Success bool                     `json:"success"`
+}
+
 // NewService create server instance
 func NewService(isTest bool, port string, configFile string) *Goddit {
 	return &Goddit{
@@ -46,6 +61,7 @@ func (g *Goddit) Start() {
 	}
 
 	go func() {
+		log.Printf("Server startup at %s", g.Server.Addr)
 		// service connections
 		if err := g.Server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
@@ -77,32 +93,19 @@ func GetRouter(g *Goddit, r *gin.Engine) {
 	})
 
 	r.GET("/api/getTopics/*page", g.GetTopics)
-
 	r.POST("/api/newTopic", g.NewTopic)
-
 	r.POST("/api/upVote/:topic/*page", g.UpTopic)
-
 	r.POST("/api/downVote/:topic/*page", g.DownTopic)
 }
 
-// Pages for indicates the response position
-type Pages struct {
-	CurrentPage uint64 `json:"currentPage"`
-	LastPage    uint64 `json:"lastPage"`
-}
-
-// QueryResponse is the Response of XHR Request structure,
-// it always have Success field to indicate the request is success or not,
-// and there have Pages structure to indicate current page and last page count
-type QueryResponse struct {
-	Data    []*Topic.ResponseOfTopic `json:"data"`
-	Pages   *Pages                   `json:"pages"`
-	Success bool                     `json:"success"`
+// GetTopcisCount is return the count of Topics
+func (g *Goddit) GetTopcisCount() uint64 {
+	return uint64(len(g.Topics))
 }
 
 // GetMaxPage is for return the max page number for topics
-func (g *Goddit) GetMaxPage(_topics []*Topic.ResponseOfTopic) uint64 {
-	count := len(_topics)
+func (g *Goddit) GetMaxPage() uint64 {
+	count := g.GetTopcisCount()
 	if count == 0 {
 		return 0
 	}
@@ -121,13 +124,8 @@ func (g *Goddit) GetTopics(c *gin.Context) {
 	page, err := strconv.ParseUint(_page, 10, 64)
 	// after pre-process the page parameter, convert to int
 	// if there has some error, e.g. non-numeric character included, raise the error
-	if err != nil {
-		err := Error.RaisePageParameterInvalidError(_page)
-		c.JSON(http.StatusExpectationFailed, err)
-		return
-	}
-	// if there has less then 1, e.g. -1 or 0, also raise the error
-	if page <= 0 {
+	// or if there has less then 1, e.g. -1 or 0, also raise the error
+	if err != nil || page <= 0 {
 		err := Error.RaisePageParameterInvalidError(_page)
 		c.JSON(http.StatusExpectationFailed, err)
 		return
@@ -136,9 +134,10 @@ func (g *Goddit) GetTopics(c *gin.Context) {
 	// because we can not sort the data structure during users get the top list,
 	// that will be an impact to the system
 	starts := g.Config.TopicsPerPage * (page - 1)
-	maxTopicsCount := uint64(math.Min(float64(starts+g.Config.TopicsPerPage), float64(len(g.Topics))))
+	topicsCount := g.GetTopcisCount()
+	maxTopicsCount := uint64(math.Min(float64(starts+g.Config.TopicsPerPage), float64(topicsCount)))
 	// if we request a page is out of bound, raise error
-	if starts > uint64(len(g.Topics)) {
+	if starts > topicsCount {
 		err := Error.RaisePageInvalidError(_page)
 		c.JSON(http.StatusExpectationFailed, err)
 		return
@@ -150,7 +149,7 @@ func (g *Goddit) GetTopics(c *gin.Context) {
 		Data: _topics,
 		Pages: &Pages{
 			CurrentPage: page,
-			LastPage:    g.GetMaxPage(g.Topics),
+			LastPage:    g.GetMaxPage(),
 		},
 		Success: true,
 	})

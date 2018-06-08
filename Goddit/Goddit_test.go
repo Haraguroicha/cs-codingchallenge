@@ -261,7 +261,7 @@ func addManysTopic(t *testing.T, startAt uint64, additionTest func(*testing.T, s
 // trying to add manys topics and can not be responsed count greater than the paging maximum
 func TestInsertManysTopics(t *testing.T) {
 	addManysTopic(t, 0, func(t *testing.T, topicTitle string, responsed *QueryResponse) {
-		assert.Equal(t, topicTitle, s.Topics[len(s.Topics)-1].TopicTitle)
+		assert.Equal(t, topicTitle, s.Topics[s.GetTopcisCount()-1].TopicTitle)
 	})
 }
 
@@ -315,7 +315,7 @@ func TestUpVotes(t *testing.T) {
 // trying to add manys topics that will be append to last
 func TestInsertManysTopicsAgain(t *testing.T) {
 	addManysTopic(t, 25, func(t *testing.T, topicTitle string, responsed *QueryResponse) {
-		assert.Equal(t, topicTitle, s.Topics[len(s.Topics)-1].TopicTitle)
+		assert.Equal(t, topicTitle, s.Topics[s.GetTopcisCount()-1].TopicTitle)
 	})
 }
 
@@ -360,10 +360,10 @@ func TestDownVotes(t *testing.T) {
 		assert.Equal(t, true, responsed.Success)
 		_topicIDs := Topic.GetTopicIDs(responsed.Data)
 		assert.Equal(t, []uint64{3, 1, 2}, _topicIDs[0:3])
-		assert.Equal(t, uint64(4), s.Topics[len(s.Topics)-1].TopicID)
+		assert.Equal(t, uint64(4), s.Topics[s.GetTopcisCount()-1].TopicID)
 		assert.Equal(t, &Topic.Votes{UpVotes: 1, DownVotes: 0, SumVotes: 1}, responsed.Data[0].Votes)
 		assert.Equal(t, &Topic.Votes{UpVotes: 0, DownVotes: 0, SumVotes: 0}, responsed.Data[1].Votes)
-		assert.Equal(t, &Topic.Votes{UpVotes: 2, DownVotes: 3, SumVotes: -1}, s.Topics[len(s.Topics)-1].Votes)
+		assert.Equal(t, &Topic.Votes{UpVotes: 2, DownVotes: 3, SumVotes: -1}, s.Topics[s.GetTopcisCount()-1].Votes)
 		t.Log("TopicIDs", Topic.GetTopicIDs(s.Topics))
 	})
 }
@@ -371,7 +371,7 @@ func TestDownVotes(t *testing.T) {
 // trying to add manys topics that will be append to before the last one, because last one is subtotal less than 0
 func TestInsertManysTopicsAgainAndAgain(t *testing.T) {
 	addManysTopic(t, 50, func(t *testing.T, topicTitle string, responsed *QueryResponse) {
-		assert.Equal(t, topicTitle, s.Topics[len(s.Topics)-2].TopicTitle) // it should be at last two to find last we added topic
+		assert.Equal(t, topicTitle, s.Topics[s.GetTopcisCount()-2].TopicTitle) // it should be at last two to find last we added topic
 	})
 }
 
@@ -458,21 +458,21 @@ func BenchmarkGetTopics(b *testing.B) {
 
 func BenchmarkGetTopicsByRandomPage(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		page := Utilities.RandomIn(1, s.GetMaxPage(s.Topics))
+		page := Utilities.RandomIn(1, s.GetMaxPage())
 		testHTTPResponse(HTTPGet(fmt.Sprintf("/api/getTopics/%d", page)), func(w *httptest.ResponseRecorder) {})
 	}
 }
 
 func BenchmarkUpVotes(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		topicID := Utilities.RandomIn(0, uint64(len(s.Topics)))
+		topicID := Utilities.RandomIn(0, s.GetTopcisCount())
 		testHTTPResponse(HTTPPost(fmt.Sprintf("/api/upVote/%d/", topicID), nil), func(w *httptest.ResponseRecorder) {})
 	}
 }
 
 func BenchmarkDownVotes(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		topicID := Utilities.RandomIn(0, uint64(len(s.Topics)))
+		topicID := Utilities.RandomIn(0, s.GetTopcisCount())
 		testHTTPResponse(HTTPPost(fmt.Sprintf("/api/downVote/%d/", topicID), nil), func(w *httptest.ResponseRecorder) {})
 	}
 }
@@ -488,14 +488,14 @@ func BenchmarkNewTopics(b *testing.B) {
 
 func BenchmarkUpVotesAfterManysTopics(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		topicID := Utilities.RandomIn(0, uint64(len(s.Topics)))
+		topicID := Utilities.RandomIn(0, s.GetTopcisCount())
 		testHTTPResponse(HTTPPost(fmt.Sprintf("/api/upVote/%d/", topicID), nil), func(w *httptest.ResponseRecorder) {})
 	}
 }
 
 func BenchmarkDownVotesAfterManysTopics(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		topicID := Utilities.RandomIn(0, uint64(len(s.Topics)))
+		topicID := Utilities.RandomIn(0, s.GetTopcisCount())
 		testHTTPResponse(HTTPPost(fmt.Sprintf("/api/downVote/%d/", topicID), nil), func(w *httptest.ResponseRecorder) {})
 	}
 }
@@ -508,7 +508,7 @@ func BenchmarkGetTopicsAfterManysTopics(b *testing.B) {
 
 func BenchmarkGetTopicsByRandomPageAfterManysTopics(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		page := Utilities.RandomIn(1, s.GetMaxPage(s.Topics))
+		page := Utilities.RandomIn(1, s.GetMaxPage())
 		testHTTPResponse(HTTPGet(fmt.Sprintf("/api/getTopics/%d", page)), func(w *httptest.ResponseRecorder) {})
 	}
 }
